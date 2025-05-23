@@ -28,15 +28,20 @@
             font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: var(--page-bg);
+            background-image: url('aventurine.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
             color: var(--text-color);
             font-size: 14px;
             line-height: 1.6;
+            min-height: 100vh;
         }
         .container {
             max-width: 800px;
             margin: auto;
-            background-color: var(--container-bg);
+            background-color: rgba(44, 44, 44, 0.85);
             padding: 25px;
             border-radius: 12px;
             box-shadow: 0 10px 30px var(--shadow-color);
@@ -70,7 +75,7 @@
             padding: 20px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            background-color: var(--table-bg);
+            background-color: rgba(0, 77, 0, 0.75);
         }
         .setup-item {
             margin-bottom: 12px;
@@ -138,7 +143,7 @@
         }
 
         .player-card {
-            background-color: var(--card-bg);
+            background-color: rgba(46, 125, 50, 0.8);
             padding: 15px;
             margin-bottom: 12px;
             border-radius: 8px;
@@ -191,7 +196,7 @@
             text-align: center;
             margin-top: 25px;
             padding: 15px;
-            background-color: var(--card-bg);
+            background-color: rgba(46, 125, 50, 0.8);
             border-radius: 8px;
             border: 1px solid var(--border-color);
         }
@@ -220,10 +225,10 @@
             background-color: var(--primary-accent); color: white;
         }
         button[data-action="reset-round"] {
-             background-color: var(--secondary-accent); color: #202020;
+            background-color: var(--secondary-accent); color: #202020;
         }
-         button[data-action="reset-round"]:hover:not(:disabled) {
-             background-color: #d39e00;
+        button[data-action="reset-round"]:hover:not(:disabled) {
+            background-color: #d39e00;
         }
         button[data-action="reset-all"] {
             background-color: var(--danger-accent); color: white;
@@ -254,7 +259,7 @@
             margin-left: 4px;
         }
         button[id^="btnCall-"] .call-amount-text {
-             color: white;
+            color: white;
         }
 
         span[id^="playerStatus-"] {
@@ -295,7 +300,7 @@
     <div class="game-content" id="gameContent" style="display:none;">
         <h2>Yang kalah traktir mawut</h2>
         <div id="playersContainer">
-            </div>
+        </div>
 
         <div class="pot-section">
             <h3>Center Pot</h3>
