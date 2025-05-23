@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JEKACOR ONLINE POKER CHIP SIMULATOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --page-bg: #1a1a1a;
+            --container-bg: #2c2c2c;
+            --table-bg: #004d00;
+            --card-bg: #2E7D32;
+            --text-color: #f0f0f0;
+            --text-secondary-color: #b0b0b0;
+            --primary-accent: #4CAF50;
+            --secondary-accent: #FFC107;
+            --danger-accent: #F44336;
+            --disabled-bg: #555;
+            --disabled-text: #888;
+            --border-color: #444;
+            --input-bg: #333;
+            --input-border: #555;
+            --shadow-color: rgba(0,0,0,0.5);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--page-bg);
+            color: var(--text-color);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: var(--container-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+        }
+        h1 {
+            text-align: center;
+            color: var(--primary-accent);
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 2px var(--shadow-color);
+        }
+        h2 {
+            color: var(--text-secondary-color);
+            font-size: 1.6em;
+            font-weight: 600;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: var(--text-secondary-color);
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .setup-section, .game-content {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--table-bg);
+        }
+        .setup-item {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .setup-item label {
+            flex-basis: 180px;
+            flex-shrink: 0;
+            color: var(--text-secondary-color);
+            font-weight: 600;
+        }
+        input[type="number"], select {
+            padding: 10px;
+            border: 1px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-radius: 6px;
+            font-size: 1em;
+            width: 120px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 5px var(--primary-accent);
+        }
+
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            margin-top: 5px;
+            margin-right: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        button:active:not(:disabled) {
+            transform: translateY(0px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        button:disabled {
+            background-color: var(--disabled-bg);
+            color: var(--disabled-text);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .setup-section button {
+            background-color: var(--primary-accent);
+            color: white;
+        }
+        .setup-section button:hover:not(:disabled) {
+            background-color: #388E3C;
+        }
+
+        .player-card {
+            background-color: var(--card-bg);
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .player-info {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .player-name {
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        .player-info span:not(.player-name) {
+            color: var(--text-secondary-color);
+        }
+        #playerStatus {
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .player-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .player-actions input[type="number"] {
+            width: 100px;
+        }
+        
+        button[id^="btnBet-"] { background-color: var(--primary-accent); color: white; }
+        button[id^="btnBet-"]:hover:not(:disabled) { background-color: #3e8e41; }
+
+        button[id^="btnCall-"] { background-color: #007bff; color: white; }
+        button[id^="btnCall-"]:hover:not(:disabled) { background-color: #0056b3; }
+
+        button[id^="btnRaise-"] { background-color: var(--secondary-accent); color: #202020; }
+        button[id^="btnRaise-"]:hover:not(:disabled) { background-color: #d39e00; }
+
+        button[id^="btnAllIn-"] { background-color: var(--danger-accent); color: white; }
+        button[id^="btnAllIn-"]:hover:not(:disabled) { background-color: #c82333; }
+
+        button[id^="btnFold-"] { background-color: #6c757d; color: white; }
+        button[id^="btnFold-"]:hover:not(:disabled) { background-color: #545b62; }
+
+
+        .pot-section {
+            text-align: center;
+            margin-top: 25px;
+            padding: 15px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .pot-amount {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--secondary-accent);
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 6px;
+            display: inline-block;
+        }
+        .pot-controls > div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .pot-controls label {
+            color: var(--text-secondary-color);
+            font-weight: 600;
+        }
+        .pot-controls button { 
+            background-color: var(--primary-accent); color: white;
+        }
+        button[data-action="reset-round"] {
+             background-color: var(--secondary-accent); color: #202020;
+        }
+         button[data-action="reset-round"]:hover:not(:disabled) {
+             background-color: #d39e00;
+        }
+        button[data-action="reset-all"] {
+            background-color: var(--danger-accent); color: white;
+        }
+        button[data-action="reset-all"]:hover:not(:disabled) {
+            background-color: #c82333;
+        }
+
+        #currentBetDisplay {
+            font-weight: bold;
+            color: var(--text-secondary-color);
+        }
+
+        #restartButton {
+            display: block;
+            margin: 25px auto 0 auto;
+            background-color: var(--primary-accent);
+            color: white;
+            width: 250px;
+            font-size: 1em;
+        }
+        #restartButton:hover:not(:disabled) {
+            background-color: #388E3C;
+        }
+        .call-amount-text {
+            font-size: 0.85em;
+            font-weight: normal;
+            margin-left: 4px;
+        }
+        button[id^="btnCall-"] .call-amount-text {
+             color: white;
+        }
+
+        span[id^="playerStatus-"] {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            margin-left: 8px;
+        }
+        span[id^="playerStatus-"][data-status="FOLD"] {
+            background-color: #6c757d;
+            color: white;
+        }
+        span[id^="playerStatus-"][data-status="ALL-IN"] {
+            background-color: var(--danger-accent);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>JEKACOR POKER CHIP SIMULATOR</h1>
+
+    <div class="setup-section" id="setupSection">
+        <h2>Player Setup</h2>
+        <div class="setup-item">
+            <label for="numPlayers">Number of Players (2-6):</label>
+            <input type="number" id="numPlayers" value="2" min="2" max="6">
+        </div>
+        <div class="setup-item">
+            <label for="initialChips">Starting Chips:</label>
+            <input type="number" id="initialChips" value="1000" min="100">
+        </div>
+        <button onclick="setupGame()">Start Game</button>
+    </div>
+
+    <div class="game-content" id="gameContent" style="display:none;">
+        <h2>Yang kalah traktir mawut</h2>
+        <div id="playersContainer">
+            </div>
+
+        <div class="pot-section">
+            <h3>Center Pot</h3>
+            <div class="pot-amount">Total Pot: <span id="potAmount">0</span></div>
+            <div>Current Bet: <span id="currentBetDisplay">0</span></div>
+            <div class="pot-controls">
+                <div>
+                    <label for="potWinnerSelect">Pot Winner:</label>
+                    <select id="potWinnerSelect"></select>
+                    <button onclick="awardPot()">Award Pot to Winner</button>
+                </div>
+                <button data-action="reset-round" onclick="resetCurrentRoundState()">Reset Current Round</button>
+                <button data-action="reset-all" onclick="resetPotCompletely()">Reset Entire Pot & Round</button>
+            </div>
+        </div>
+    </div>
+    <button id="restartButton" style="display:none;" onclick="restartGameSetup()">Start New Game (Full Reset)</button>
+</div>
+
+<script>
+    let players = [];
+    let potAmount = 0;
+    let currentBetToMatch = 0;
+    let lastBetRaiseSize = 0;
+
+    function setupGame() {
+        const numPlayersInput = document.getElementById('numPlayers');
+        const initialChipsInput = document.getElementById('initialChips');
+        const numPlayers = parseInt(numPlayersInput.value);
+        const initialChips = parseInt(initialChipsInput.value);
+
+        if (isNaN(numPlayers) || numPlayers < 2 || numPlayers > 6 || isNaN(initialChips) || initialChips <= 0) {
+            alert("Invalid settings.");
+            return;
+        }
+
+        players = [];
+        const playersContainer = document.getElementById('playersContainer');
+        const potWinnerSelect = document.getElementById('potWinnerSelect');
+        playersContainer.innerHTML = '';
+        potWinnerSelect.innerHTML = '';
+        potAmount = 0;
+        resetCurrentRoundStateVars();
+
+        for (let i = 0; i < numPlayers; i++) {
+            const playerName = prompt(`Enter name for Player ${i + 1}:`, `Player ${i + 1}`);
+            if (!playerName) {
+                alert("Setup cancelled.");
+                numPlayersInput.value = "2";
+                initialChipsInput.value = "1000";
+                return;
+            }
+            players.push({
+                id: i,
+                name: playerName,
+                chips: initialChips,
+                folded: false,
+                chipsInPotThisRound: 0,
+                allIn: false
+            });
+
+            const playerCard = document.createElement('div');
+            playerCard.className = 'player-card';
+            playerCard.id = `player-${i}`;
+            playerCard.innerHTML = `
+                <div class="player-info">
+                    <span class="player-name">${playerName}</span>:
+                    Chips: <span id="chips-${i}">${initialChips}</span>
+                    (In Pot This Round: <span id="chipsInPot-${i}">0</span>)
+                    <span id="playerStatus-${i}" class="player-status-indicator"></span>
+                </div>
+                <div class="player-actions">
+                    <input type="number" id="actionAmount-${i}" placeholder="Amount" min="1">
+                    <button id="btnBet-${i}" onclick="handleBet(${i})">Bet</button>
+                    <button id="btnCall-${i}" onclick="handleCall(${i})">Call <span class="call-amount-text" id="callAmountText-${i}"></span></button>
+                    <button id="btnRaise-${i}" onclick="handleRaise(${i})">Raise</button>
+                    <button id="btnAllIn-${i}" onclick="handleAllIn(${i})">All In</button>
+                    <button id="btnFold-${i}" onclick="playerFolds(${i})">Fold</button>
+                </div>
+            `;
+            playersContainer.appendChild(playerCard);
+
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = playerName;
+            potWinnerSelect.appendChild(option);
+        }
+
+        document.getElementById('setupSection').style.display = 'none';
+        document.getElementById('gameContent').style.display = 'block';
+        document.getElementById('restartButton').style.display = 'block';
+        updateAllPlayerUIs();
+        updatePotDisplay();
+    }
+
+    function updatePlayerChipsDisplay(playerId) {
+        const player = players[playerId];
+        document.getElementById(`chips-${playerId}`).textContent = player.chips;
+        document.getElementById(`chipsInPot-${playerId}`).textContent = player.chipsInPotThisRound;
+        
+        const statusEl = document.getElementById(`playerStatus-${playerId}`);
+        if (player.folded) {
+            statusEl.textContent = "FOLD";
+            statusEl.dataset.status = "FOLD";
+        } else if (player.allIn) {
+            statusEl.textContent = "ALL-IN";
+            statusEl.dataset.status = "ALL-IN";
+        } else {
+            statusEl.textContent = "";
+            statusEl.dataset.status = "";
+        }
+    }
+
+    function updatePotDisplay() {
+        document.getElementById('potAmount').textContent = potAmount;
+        document.getElementById('currentBetDisplay').textContent = currentBetToMatch;
+    }
+
+    function updateAllPlayerUIs() {
+        players.forEach(player => {
+            if (document.getElementById(`player-${player.id}`)) {
+                 updatePlayerChipsDisplay(player.id);
+                 updatePlayerActionStates(player.id);
+            }
+        });
+        updatePotDisplay();
+        updatePotWinnerOptions();
+    }
+
+    function updatePlayerActionStates(playerId) {
+        const player = players[playerId];
+        const actionAmountInput = document.getElementById(`actionAmount-${playerId}`);
+        const btnBet = document.getElementById(`btnBet-${playerId}`);
+        const btnCall = document.getElementById(`btnCall-${playerId}`);
+        const btnRaise = document.getElementById(`btnRaise-${playerId}`);
+        const btnAllIn = document.getElementById(`btnAllIn-${playerId}`);
+        const btnFold = document.getElementById(`btnFold-${playerId}`);
+        const callAmountText = document.getElementById(`callAmountText-${playerId}`);
+
+        if (!actionAmountInput || !btnBet || !btnCall || !btnRaise || !btnAllIn || !btnFold || !callAmountText) {
+             console.warn(`UI elements for player ${playerId} not fully found.`);
+             return;
+        }
+
+        const allElements = [btnBet, btnCall, btnRaise, btnAllIn, btnFold, actionAmountInput];
+        allElements.forEach(el => el.disabled = false);
+        actionAmountInput.placeholder = "Amount";
+
+
+        if (player.folded || (player.allIn && player.chips === 0)) {
+            allElements.forEach(el => el.disabled = true);
+            callAmountText.textContent = '';
+            actionAmountInput.placeholder = "N/A";
+            return;
+        }
+        
+        btnFold.disabled = player.folded;
+        actionAmountInput.disabled = player.allIn || player.folded;
+        btnAllIn.disabled = player.allIn || player.folded || player.chips === 0;
+
+        if (currentBetToMatch === 0) {
+            btnBet.disabled = player.allIn || player.chips === 0;
+            btnCall.disabled = true;
+            btnRaise.disabled = true;
+            callAmountText.textContent = '';
+        } else { 
+            btnBet.disabled = true;
+            const amountToCallVal = currentBetToMatch - player.chipsInPotThisRound;
+            
+            if (amountToCallVal <= 0) {
+                btnCall.disabled = true;
+                callAmountText.textContent = '(Called/Checked)';
+                btnRaise.disabled = player.allIn || player.chips === 0;
+            } else {
+                const displayCallAmount = Math.min(player.chips, amountToCallVal);
+                btnCall.disabled = player.allIn;
+                callAmountText.textContent = `(${displayCallAmount})`;
+                btnRaise.disabled = player.allIn || player.chips <= amountToCallVal;
+            }
+        }
+        
+        if (!btnRaise.disabled) {
+            const minBetForRaise = currentBetToMatch + 1;
+            const minChipNeededForRaise = minBetForRaise - player.chipsInPotThisRound;
+            if (player.chips < minChipNeededForRaise) {
+                btnRaise.disabled = true;
+            }
+        }
+        if (player.allIn) {
+             [btnBet, btnCall, btnRaise, btnAllIn, actionAmountInput].forEach(el => el.disabled = true);
+        }
+    }
+
+    function handleBet(playerId) {
+        const player = players[playerId];
+        if (player.folded || player.allIn || currentBetToMatch > 0) {
+            updateAllPlayerUIs();
+            return;
+        }
+
+        const actionAmountInput = document.getElementById(`actionAmount-${playerId}`);
+        const betAmount = parseInt(actionAmountInput.value);
+
+        if (isNaN(betAmount) || betAmount <= 0) {
+            alert("Invalid bet amount."); return;
+        }
+        if (betAmount > player.chips) {
+            alert("Not enough chips."); return;
+        }
+        
+        player.chips -= betAmount;
+        player.chipsInPotThisRound += betAmount;
+        potAmount += betAmount;
+        currentBetToMatch = player.chipsInPotThisRound; 
+        lastBetRaiseSize = betAmount;
+
+        actionAmountInput.value = '';
+        updateAllPlayerUIs();
+    }
+
+    function handleCall(playerId) {
+        const player = players[playerId];
+        if (player.folded || player.allIn) return;
+
+        const amountNeededToCall = currentBetToMatch - player.chipsInPotThisRound;
+        if (amountNeededToCall <= 0) {
+            updateAllPlayerUIs();
+            return;
+        }
+
+        const callAmount = Math.min(player.chips, amountNeededToCall);
+        player.chips -= callAmount;
+        player.chipsInPotThisRound += callAmount;
+        potAmount += callAmount;
+
+        if (player.chips === 0) player.allIn = true;
+        updateAllPlayerUIs();
+    }
+
+    function handleRaise(playerId) {
+        const player = players[playerId];
+        if (player.folded || player.allIn) return;
+
+        const actionAmountInput = document.getElementById(`actionAmount-${playerId}`);
+        const totalNewBetSize = parseInt(actionAmountInput.value); 
+
+        if (isNaN(totalNewBetSize) || totalNewBetSize <= currentBetToMatch) {
+            alert(`Raise must be greater than the current bet (${currentBetToMatch}). Enter your new total bet amount.`);
+            return;
+        }
+        
+        const minRaiseTotalBet = currentBetToMatch + lastBetRaiseSize;
+
+        const amountToActuallyAdd = totalNewBetSize - player.chipsInPotThisRound;
+
+        if (amountToActuallyAdd <= 0) {
+            alert("Invalid raise amount."); return;
+        }
+        if (amountToActuallyAdd > player.chips) {
+            alert("Not enough chips to raise. Maybe All In?"); return;
+        }
+
+        player.chips -= amountToActuallyAdd;
+        potAmount += amountToActuallyAdd;
+        
+        lastBetRaiseSize = totalNewBetSize - currentBetToMatch; 
+        currentBetToMatch = totalNewBetSize; 
+        player.chipsInPotThisRound = totalNewBetSize;
+
+        if (player.chips === 0) player.allIn = true;
+        actionAmountInput.value = '';
+        updateAllPlayerUIs();
+    }
+
+    function handleAllIn(playerId) {
+        const player = players[playerId];
+        if (player.folded || player.allIn) return;
+
+        const allInAmount = player.chips;
+        if (allInAmount === 0) return;
+
+        player.chips = 0;
+        player.chipsInPotThisRound += allInAmount;
+        potAmount += allInAmount;
+        player.allIn = true;
+
+        if (player.chipsInPotThisRound > currentBetToMatch) {
+            lastBetRaiseSize = player.chipsInPotThisRound - currentBetToMatch;
+            currentBetToMatch = player.chipsInPotThisRound;
+        }
+        
+        updateAllPlayerUIs();
+    }
+
+    function playerFolds(playerId) {
+        const player = players[playerId];
+        if (player.folded) return;
+        player.folded = true;
+        
+        const activePlayers = players.filter(p => !p.folded);
+        updateAllPlayerUIs(); 
+
+        if (activePlayers.length === 1) {
+            alert(`${activePlayers[0].name} wins the pot as other players folded!`);
+            const potWinnerSelect = document.getElementById('potWinnerSelect');
+            let winnerOptionExists = false;
+            for(let i=0; i < potWinnerSelect.options.length; i++){
+                if(potWinnerSelect.options[i].value == activePlayers[0].id){
+                    winnerOptionExists = true;
+                    break;
+                }
+            }
+            if(!winnerOptionExists){
+                const option = document.createElement('option');
+                option.value = activePlayers[0].id;
+                option.textContent = activePlayers[0].name;
+                potWinnerSelect.appendChild(option);
+            }
+            potWinnerSelect.value = activePlayers[0].id;
+            awardPot();
+        }
+    }
+    
+    function resetCurrentRoundStateVars() {
+        currentBetToMatch = 0;
+        lastBetRaiseSize = 0;
+        players.forEach(player => {
+            player.chipsInPotThisRound = 0;
+        });
+    }
+    
+    function resetCurrentRoundState() { 
+        currentBetToMatch = 0;
+        lastBetRaiseSize = 0;
+        players.forEach(player => {
+            player.chipsInPotThisRound = 0; 
+        });
+        alert("Current betting round reset. Pot remains. Start new betting.");
+        updateAllPlayerUIs(); 
+    }
+
+    function awardPot() {
+        const potWinnerSelect = document.getElementById('potWinnerSelect');
+        const winnerId = parseInt(potWinnerSelect.value);
+
+        if (isNaN(winnerId) ) {
+            alert("Select a winner.");
+            return;
+        }
+        
+        const winner = players.find(p => p.id === winnerId);
+        if (!winner) {
+             alert("Invalid winner."); return;
+        }
+        if (winner.folded) {
+            alert("Selected player has already folded.");
+            return;
+        }
+
+        winner.chips += potAmount;
+        alert(`${winner.name} wins ${potAmount} chips!`);
+        
+        potAmount = 0;
+        resetCurrentRoundStateVars(); 
+        players.forEach(p => { 
+            p.folded = false;
+            p.allIn = false;
+        });
+
+        updateAllPlayerUIs();
+    }
+    
+    function updatePotWinnerOptions() {
+        const potWinnerSelect = document.getElementById('potWinnerSelect');
+        const currentWinnerValue = potWinnerSelect.value;
+        potWinnerSelect.innerHTML = '';
+        let activePlayerCount = 0;
+        players.forEach((player) => {
+            if (!player.folded) {
+                const option = document.createElement('option');
+                option.value = player.id;
+                option.textContent = player.name;
+                potWinnerSelect.appendChild(option);
+                activePlayerCount++;
+            }
+        });
+        
+        if (activePlayerCount > 0) {
+            const previousWinnerStillActive = players.find(p => p.id === parseInt(currentWinnerValue) && !p.folded);
+            if (previousWinnerStillActive) {
+                potWinnerSelect.value = currentWinnerValue;
+            } else {
+                potWinnerSelect.selectedIndex = 0; 
+            }
+        }
+    }
+
+    function resetPotCompletely() { 
+        potAmount = 0;
+        resetCurrentRoundStateVars();
+        players.forEach(p => { 
+            p.folded = false;
+            p.allIn = false;
+        });
+        alert("Entire pot and round status have been reset.");
+        updateAllPlayerUIs();
+    }
+
+    function restartGameSetup() { 
+        document.getElementById('gameContent').style.display = 'none';
+        document.getElementById('restartButton').style.display = 'none';
+        document.getElementById('setupSection').style.display = 'block';
+        
+        document.getElementById('numPlayers').value = '2';
+        document.getElementById('initialChips').value = '1000';
+        players = []; 
+        potAmount = 0;
+        resetCurrentRoundStateVars();
+    }
+</script>
+
+</body>
+</html>
